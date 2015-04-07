@@ -78,6 +78,17 @@ public class PSTRecipient {
 	public int getRecipientOrder() {
 		return getInt(0x5fdf);
 	}
+
+	/**
+	 * The PidTagObjectType property ([MS-OXPROPS section 2.802) indicates the type of Server object.
+	 * This property does not apply to Folder objects and Logon objects.
+	 * The value of this property MUST be one of the values in MS-OXCPRPT section 2.2.1.7
+	 *
+	 * @return value of the PidTagObjectType
+	 */
+	public int getObjectType() {
+		return getInt(0x0ffe);
+	}
 	
 	public String getSmtpAddress()
 	{

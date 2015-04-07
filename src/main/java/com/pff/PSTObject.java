@@ -112,9 +112,9 @@ public class PSTObject {
 		this.localDescriptorItems = localDescriptorItems;
 	}
 	protected PSTTableBC table;
-	
-	
-	
+
+
+
 	/**
 	 * get the descriptor node for this item
 	 * this identifies the location of the node in the BTree and associated info
@@ -400,6 +400,56 @@ public class PSTObject {
 		return this.getDateItem(0x3008);
 	}
 
+	/**
+	 * Defining reference: [MS-OXCMSG] section 2.2.1.31
+	 * The PidTagCreatorEntryId property ([MS-OXPROPS] section 2.646) specifies the original author of the message according to their address book EntryID.
+	 * The format of an address book EntryID data type is specified in [MS-OXCDATA] section 2.2.5.2.
+	 *
+	 * @return byte array of the data, or null if the property is not present
+	 */
+	public byte[] getCreatorEntryId() {
+		return this.getBinaryItem(0x3ff9);
+	}
+
+	/**
+	 * Defining reference: [MS-OXCMSG] section 2.2.1.32
+	 * The PidTagLastModifierEntryId property ([MS-OXPROPS] section 2.754) specifies the last user to modify the contents of the message according to their address book EntryID.
+	 * The format of an address book EntryID data type is specified in [MS-OXCDATA] section 2.2.5.2.
+	 *
+	 * @return byte array of the data, or null if the property is not present
+	 */
+
+	public byte[] LastModifierEntryId() {
+		return this.getBinaryItem(0x3ffb);
+	}
+
+	static int[] entryPidTags = {
+		0x0000804E,	0x0000804D,	0x000080E2,	0x000085C6,	0x000085C7,	0x00008055,	0x00008054,	0x00008064,	0x00008085,	0x00008095,	0x000080A5,	0x000080B5,	0x000080C5,
+		0x000080D5,	0x00008237,	0x000085BD,	0x00008A2D,	0x00008A15,	0x00008A2E,	0x00008A09,	0x00008A07,	0x00008A29,	0x00008A5C,	0x00008A06,
+//		0x000036D8, // PtypMultipleBinary
+		0x36D9,	0x663B,	0xFFFC,	0x3FF0,	0x3FF9,	0x6646,	0x6741,	0x0FFF,	0x36E4,	0x36D0,	0x36D1,	0x36D7,	0x36D2,	0x36D3,	0x36D4,	0x3FFB,	0x661B,	0x004C,	0x3A12,
+		0x005B,	0x005E,	0x0E09,	0x0046,
+		0x003F,
+		0x0043,	0x5FF7,	0x36D5,	0x004F,	0x0045,	0x6651,
+//		0x6845, // PtypMultipleBinary
+		0x6622,	0x0C19,
+//		0x6740, // PtypServerId
+		0x0041,	0x0FFB,	0x0E2C,	0x3010,	0x3902,	0x6619,	0x6854,	0x6891,	0x684C,	0x684E
+	};
+
+	public Map<Integer, byte[]> getEntryIds() {
+		Map<Integer, byte[]> entryIds = new HashMap<Integer, byte[]>();
+
+		for(int index = 0; index < entryPidTags.length; index++) {
+			byte[] item = this.getBinaryItem(entryPidTags[index]);
+
+			if(item != null && item.length != 0) {
+				entryIds.put(entryPidTags[index], item);
+			}
+		}
+		return entryIds;
+	}
+
 	
 	/**
 	 * Static stuff below
@@ -677,7 +727,7 @@ public class PSTObject {
 			messageClass = item.getStringValue();
 		}
 
-		if (messageClass.equals("IPM.Note")) {
+		if (messageClass.startsWith("IPM.Note")) {
 			return new PSTMessage(theFile, folderIndexNode, table, localDescriptorItems);
 		} else if (messageClass.equals("IPM.Appointment") ||
 				   messageClass.equals("IPM.OLE.CLASS.{00061055-0000-0000-C000-000000000046}") ||
@@ -694,7 +744,7 @@ public class PSTObject {
 		} else if (messageClass.equals("IPM.DistList")) {
 			return new PSTDistList(theFile, folderIndexNode, table, localDescriptorItems);
 		} else {
-			System.err.println("Unknown message type: "+messageClass);
+			//System.err.println("Unknown message type: "+messageClass);
 		}
 
 		return new PSTMessage(theFile, folderIndexNode, table, localDescriptorItems);

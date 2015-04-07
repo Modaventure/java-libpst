@@ -135,6 +135,10 @@ public class PSTAppointmentRecurrence {
 		return EndTimeOffset;
 	}
 
+	public PSTAppointmentRecurrence(PSTAppointment appt) {
+		this(appt.getRecurrenceStructure(), appt, appt.getRecurrenceTimeZone());
+	}
+
 	public PSTAppointmentRecurrence(byte[] recurrencePattern, PSTAppointment appt, PSTTimeZone tz) {
 		RecurrenceTimeZone = tz;
 		SimpleTimeZone stz = RecurrenceTimeZone.getSimpleTimeZone();

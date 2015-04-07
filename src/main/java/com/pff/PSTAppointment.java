@@ -194,4 +194,25 @@ public class PSTAppointment extends PSTMessage {
 	public PSTGlobalObjectId getCleanGlobalObjectId() {
 		return new PSTGlobalObjectId(getBinaryItem(pstFile.getNameToIdMapItem(0x00000023, PSTFile.PSETID_Meeting)));
 	}
+
+	/**
+	 * The PidLidIsRecurring property ([MS-OXPROPS] section 2.156) specifies whether the object is associated with a recurring series.
+	 * A value of TRUE indicates that the object represents either a recurring series or an exception (including an orphan instance).
+	 * A value of FALSE or the absence of this property<7> indicates that the object represents a single instance.
+	 * Note the difference between this property and the PidLidRecurring property (section 2.2.1.12).
+	 *
+	 * Odd name due to existance of isRecurring() from PidLidRecurring, this is PidLidIsRecurring
+	 */
+	public boolean isIsRecurring() {
+		return getBooleanItem(pstFile.getNameToIdMapItem(0x00000005, PSTFile.PSETID_Meeting));
+	}
+
+	/**
+	 * A value of TRUE for the PidLidIsException property ([MS-OXPROPS] section 2.155) indicates that the object represents an exception (including an orphan instance).
+	 * A value of FALSE indicates that the object represents a recurring series or a single-instance object.
+	 * The absence of this property for any object indicates a value of FALSE except for the Exception Embedded Message object, which assumes a value of TRUE.
+	 */
+	public boolean isException() {
+		return getBooleanItem(pstFile.getNameToIdMapItem(0x0000000A, PSTFile.PSETID_Meeting));
+	}
 }
